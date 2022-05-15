@@ -19,6 +19,7 @@ const FaceInput = () => {
 	const canvasRef = useRef();
 	const videoRef = useRef(null);
 	const [ gotInfo, setGotInfo ] = useState(false);
+	const [ imgSrc, setImgSrc ] = useState(null);
 
 	const [ info, setInfo ] = useState([ 'detecting...', 'detecting...' ]);
 	const history = useHistory();
@@ -29,6 +30,14 @@ const FaceInput = () => {
 		return await new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
+	//image taking screenshot
+	const capture = React.useCallback(
+		() => {
+			const imageSrc = videoRef.current.getScreenshot();
+			setImgSrc(imageSrc);
+		},
+		[ videoRef ]
+	);
 	//video constraints for taking input video
 	const videoConstraints = {
 		width: 1280,
@@ -56,16 +65,17 @@ const FaceInput = () => {
 
 				console.log('detections res = ', detections);
 				if (detections.length > 0) {
-					if (gotInfo === false) setInfo([ detections[0].age, detections[0].gender ]);
+					if (gotInfo === false) setInfo([ Math.floor(detections[0].age - 5), detections[0].gender ]);
 					setGotInfo(true);
 				}
+				if (detections.length === 0) setInfo([ 'try to adjust light', 'click detect again..' ]);
 			}
 		} else {
 		}
 	};
 
 	const handleSubmit = () => {
-		history.push({ pathname: '/userDetails', state: { info: info } });
+		history.push({ pathname: '/userDetails', state: { info: info, image: imgSrc } });
 	};
 
 	useEffect(
@@ -89,11 +99,11 @@ const FaceInput = () => {
 		<React.Fragment>
 			<Wrapper>
 				<div className="pd1">
-					<H2> once detected please proceed with success</H2>
 					<div>
-						<P1>{info[0]}</P1>
-						<P1>{info[1]}</P1>
+						<H1>Register User</H1>
+						<P2> once detected please and picture taken proceed with success</P2>
 					</div>
+
 					{/* <video ref={videoRef} /> */}
 					<Webcam
 						audio={false}
@@ -101,15 +111,27 @@ const FaceInput = () => {
 						ref={videoRef}
 						mirrored={true}
 						width={500}
+						screenshotFormat="image/png"
 						videoConstraints={videoConstraints}
 					/>
 				</div>
-				<Button variant="primary" onClick={detectAgain}>
+				<div>
+					<P1>{info[0]}</P1>
+					<P1>{info[1]}</P1>
+				</div>
+				<Button className="m-3" variant="primary" onClick={detectAgain}>
 					Detect Again
 				</Button>
-				<Button onClick={handleSubmit} className="m-4" variant="success">
-					Success
-				</Button>{' '}
+				<span>make sure you dont have bright light on backside. </span>
+				<Button className="m-3" variant="primary" onClick={capture}>
+					take picture
+				</Button>
+				{imgSrc && (
+					<Button onClick={handleSubmit} className="m-4" variant="success">
+						Success
+					</Button>
+				)}
+				{imgSrc && <img src={imgSrc} alt="img" />}
 			</Wrapper>
 		</React.Fragment>
 	);
