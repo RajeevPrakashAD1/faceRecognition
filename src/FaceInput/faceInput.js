@@ -12,6 +12,8 @@ import { Button } from 'react-bootstrap';
 //importing from styled components
 import { P1, P2, H1, H2 } from '../components/styledComponent/basicElement';
 
+import { getFullFaceDescription } from '../faceDetection/faceDetection';
+
 const FaceInput = () => {
 	const [ faces, setFaces ] = useState([]);
 
@@ -53,7 +55,7 @@ const FaceInput = () => {
 	};
 
 	const handleImage = async () => {
-		await delay(5000);
+		await delay(1000);
 		console.log('handle image called', gotInfo);
 
 		if (gotInfo === false) {
@@ -65,7 +67,7 @@ const FaceInput = () => {
 
 				console.log('detections res = ', detections);
 				if (detections.length > 0) {
-					if (gotInfo === false) setInfo([ Math.floor(detections[0].age - 5), detections[0].gender ]);
+					if (gotInfo === false) setInfo([ Math.floor(detections[0].age), detections[0].gender ]);
 					setGotInfo(true);
 				}
 				if (detections.length === 0) setInfo([ 'try to adjust light', 'click detect again..' ]);
@@ -74,7 +76,9 @@ const FaceInput = () => {
 		}
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
+		const desc = await getFullFaceDescription(imgSrc);
+		console.log('desc', desc, desc.data);
 		history.push({ pathname: '/userDetails', state: { info: info, image: imgSrc } });
 	};
 
@@ -86,6 +90,10 @@ const FaceInput = () => {
 					faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
 					faceapi.nets.faceExpressionNet.loadFromUri('/models'),
 					faceapi.nets.ageGenderNet.loadFromUri('/models')
+					//faceapi.nets.loadSsdMAobilenetv1Model('/models')
+					//faceapi.nets.loadSsdMAobilenetv1Model.loadFromUri('/models')
+					//faceapi.nets.loadFaceLandmarkTinyModel.loadFromUri('/models')
+					//faceapi.nets.loadFaceRecognitionModel.loadFromUri('/models')
 				])
 					.then(handleImage)
 					.catch((e) => console.log(e));
@@ -120,7 +128,7 @@ const FaceInput = () => {
 					<P1>{info[1]}</P1>
 				</div>
 				<Button className="m-3" variant="primary" onClick={detectAgain}>
-					Detect Again
+					{gotInfo ? 'Detect Again' : 'Detect'}
 				</Button>
 				<span>make sure you dont have bright light on backside. </span>
 				<Button className="m-3" variant="primary" onClick={capture}>

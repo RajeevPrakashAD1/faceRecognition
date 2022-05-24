@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import { HashRouter, BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import LandingPage from './LandingPage/landingPage';
@@ -13,10 +14,10 @@ function App() {
 	return (
 		<HashRouter>
 			<div className="App">
-				<Route exact path="/" component={FaceInput} />
-				<Route exact path="/userDetails" component={CustomerForm} />
+				<Route exact path="/" component={FaceInput} />{' '}
+				<Route exact path="/userDetails" component={CustomerForm} />{' '}
 			</div>{' '}
-			{' '}
+			  {' '}
 		</HashRouter>
 	);
 }
