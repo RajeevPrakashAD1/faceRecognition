@@ -14,7 +14,7 @@ import { Button, Form, FormGroup, InputGroup, FormControl } from 'react-bootstra
 import { P1, P2, H1, H2 } from '../components/styledComponent/basicElement';
 
 const CustomerForm = () => {
-	const url = 'http://localhost:5000/register';
+	const url = 'http://35.154.237.208:5000/register';
 	const { register, handleSubmit, watch, formState: { errors } } = useForm();
 	const { state } = useLocation();
 	const history = useHistory();
@@ -36,7 +36,7 @@ const CustomerForm = () => {
 		};
 		try {
 			const res = await axios.post(url, formData, config);
-			alert(res.status);
+			alert('Successfully Registered');
 			history.push({ pathname: '/products', state: { image: state.image } });
 		} catch (err) {
 			console.log(err);
