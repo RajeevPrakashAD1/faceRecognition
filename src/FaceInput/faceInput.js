@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
-import NewPost from './newpost';
+
 import Webcam from 'react-webcam';
 import * as faceapi from 'face-api.js';
 import styled from 'styled-components';
@@ -12,8 +12,6 @@ import { Button } from 'react-bootstrap';
 //importing from styled components
 import { P1, P2, H1, H2 } from '../components/styledComponent/basicElement';
 
-import { getFullFaceDescription } from '../faceDetection/faceDetection';
-
 const FaceInput = () => {
 	const [ faces, setFaces ] = useState([]);
 
@@ -23,7 +21,7 @@ const FaceInput = () => {
 	const [ gotInfo, setGotInfo ] = useState(false);
 	const [ imgSrc, setImgSrc ] = useState(null);
 
-	const [ info, setInfo ] = useState([ 'detecting...', 'detecting...' ]);
+	const [ info, setInfo ] = useState([ 'once camera start click detect', '' ]);
 	const history = useHistory();
 
 	// const imageSrc = useRef(null);
@@ -70,15 +68,17 @@ const FaceInput = () => {
 					if (gotInfo === false) setInfo([ Math.floor(detections[0].age), detections[0].gender ]);
 					setGotInfo(true);
 				}
-				if (detections.length === 0) setInfo([ 'try to adjust light', 'click detect again..' ]);
+				if (detections.length === 0)
+					setInfo([
+						'try to adjust light',
+						'click detect again..keep trying continuously with different angle'
+					]);
 			}
 		} else {
 		}
 	};
 
 	const handleSubmit = async () => {
-		const desc = await getFullFaceDescription(imgSrc);
-		console.log('desc', desc, desc.data);
 		history.push({ pathname: '/userDetails', state: { info: info, image: imgSrc } });
 	};
 

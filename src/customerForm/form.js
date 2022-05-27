@@ -1,20 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
 import Webcam from 'react-webcam';
 import * as faceapi from 'face-api.js';
 import styled from 'styled-components';
-import { getFullFaceDescription } from '../faceDetection/faceDetection';
-import {
-	getFullFaceDescription,
-	isFaceDetectionModelLoaded,
-	isFacialLandmarkDetectionModelLoaded,
-	isFeatureExtractionModelLoaded,
-	loadModels
-} from '../faceDetection/faceDetection';
 
 //importing from bootstrap
 import { Button, Form, FormGroup, InputGroup, FormControl } from 'react-bootstrap';
@@ -25,6 +17,8 @@ const CustomerForm = () => {
 	const url = 'http://localhost:5000/register';
 	const { register, handleSubmit, watch, formState: { errors } } = useForm();
 	const { state } = useLocation();
+	const history = useHistory();
+
 	const onSubmit = async (data) => {
 		let StringImage = state.image.toString('base64');
 		console.log('sending', data, state);
@@ -35,12 +29,6 @@ const CustomerForm = () => {
 			formData.append(key, data[key]);
 		}
 		formData.append('image', StringImage);
-		//formData.append('faceDesc', fullDesc.toString());
-		// console.log('formdata', { ...formData });
-		// for (var key of formData.entries()) {
-		// 	console.log(key[0] + ', ' + key[1]);
-		// }
-		//const formHeaders = formData.getHeaders();
 
 		const config = {
 			'content-type': 'multipart/form-data',
@@ -48,19 +36,13 @@ const CustomerForm = () => {
 		};
 		try {
 			const res = await axios.post(url, formData, config);
-			console.log(res);
-
-			//  props.history.push('/mock-test/view-mock-test-question');
+			alert(res.status);
+			history.push({ pathname: '/products', state: { image: state.image } });
 		} catch (err) {
 			console.log(err);
+			alert(err.message);
 		}
-		// data.Image = state.imgSrc;
-		//const res = await axios.post('http://localhost:5000/register', data);
-		//console.log('response of sending data', res);
 	};
-
-	//console.log(state);
-	useEffect(() => {});
 
 	return (
 		<React.Fragment>
