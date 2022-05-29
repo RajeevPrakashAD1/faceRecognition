@@ -1,7 +1,7 @@
 steps to start app:
-clone or download the code
-do  npm install
-do npm start
+...............clone or download the code
+...............do  npm install
+...............do npm start
 
 
 
